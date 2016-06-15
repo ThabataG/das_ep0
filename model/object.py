@@ -49,7 +49,7 @@ class Directory(Object):
     def add_object(self, path):
         new_object = None
         if os.path.isdir(path):
-            new_adm = copy.deepcopy(self.administrator)
+
             obj = Directory(path, self, new_adm)
             obj.update_directory()
         else:

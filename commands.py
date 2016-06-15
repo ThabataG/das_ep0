@@ -93,6 +93,34 @@ class OpenObject(ObjectCommand):
     def success(self):
         print("Opening " + str(self.object))
 
+class Open(ObjectCommand):
+
+    def __init__(self, user, path):
+        super().__init__('Open', user, None)
+        self.path = path
+        self()
+
+    def __call__(self):
+        if self.get_object_by_path():
+            self.execute()
+
+    def get_object_by_path(self):
+        new_obj_real_path = Session.current_directory._real_path + self.path
+        if os.path.exists(new_obj_real_path):
+            for obj in Session.current_directory.containing_objects:
+                if obj._real_path == new_obj_real_path:
+                    self.object = obj
+            return True
+        else:
+            self.fail()
+            return False
+
+    def run(self):
+        Session.current_directory = self.object
+
+    def success(self):
+        print("Opening " + str(self.object))
+
 class ShowDirectory(ObjectCommand):
 
     def __init__(self, user, obj):
