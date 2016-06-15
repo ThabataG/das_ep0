@@ -18,10 +18,8 @@ class Privilege:
                 return True
         return False
 
-    def add_privilege(self, obj):
-        new_privilege = copy.copy(self.privileges[0])
-        new_privilege.update_privilege(obj)
-        self.privileges.append(new_privilege)
+    def update_privilege(self, obj):
+        self.object = obj
 
     def add_command(self, command):
         self.commands.append(command)

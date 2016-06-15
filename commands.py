@@ -105,15 +105,12 @@ class Open(ObjectCommand):
             self.execute()
 
     def get_object_by_path(self):
-        new_obj_real_path = Session.current_directory._real_path + self.path
-        if os.path.exists(new_obj_real_path):
-            for obj in Session.current_directory.containing_objects:
-                if obj._real_path == new_obj_real_path:
-                    self.object = obj
-            return True
-        else:
-            self.fail()
-            return False
+        for obj in Session.current_directory.containing_objects:
+            if obj.name == self.path:
+                self.object = obj
+                return True
+        self.fail()
+        return False
 
     def run(self):
         Session.current_directory = self.object
@@ -135,6 +132,33 @@ class ShowDirectory(ObjectCommand):
 
     def success(self):
         print("Showing " + str(self.object) + " objects")
+
+class Rename(ObjectCommand):
+
+    def __init__(self, user, path, new_name):
+        super().__init__('Rename', user, None)
+        self.new_name = new_name
+        self.old_name = path
+        self()
+
+    def get_object_by_path(self):
+        for obj in Session.current_directory.containing_objects:
+            if obj.name == self.old_name:
+                self.object = obj
+                return True
+        self.fail()
+        return False
+
+    def __call__(self):
+        if self.get_object_by_path():
+            self.execute()
+
+    def run(self):
+        os.rename(self.object.parent_directory._real_path+self.object.name, self.object.parent_directory._real_path + self.new_name)
+        self.object.name = self.new_name
+
+    def success(self):
+        print("Renaming " + self.old_name + " to " + self.new_name)
 
 class CreateNewRole(ObjectCommand):
 
